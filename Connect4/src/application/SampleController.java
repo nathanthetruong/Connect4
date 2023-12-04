@@ -8,7 +8,7 @@ import application.SampleController.SpotData;
 
 public class SampleController {
 	// Instantiates all the buttons
-	@FXML Button spot11;
+	@FXML Button spot11 = new Button();
 	@FXML Button spot12;
 	@FXML Button spot13;
 	@FXML Button spot14;
@@ -59,6 +59,64 @@ public class SampleController {
 	String currentTurn = "Yellow";
 	final int CHAR_TO_INT = 48;
 	int turnCounter = 0;
+	public ArrayList<Button> spotButtons;
+	
+	@FXML
+	public void initialize() {
+		initializeSpotArray();
+	}
+	
+	// Initializes Array of Spot Buttons for the AI to control their properties
+	public void initializeSpotArray() {
+		spotButtons = new ArrayList<Button>();
+		spotButtons.add(spot11);
+		spotButtons.add(spot12);
+		spotButtons.add(spot13);
+		spotButtons.add(spot14);
+		spotButtons.add(spot15);
+		spotButtons.add(spot16);
+		spotButtons.add(spot17);
+		
+		spotButtons.add(spot21);
+		spotButtons.add(spot22);
+		spotButtons.add(spot23);
+		spotButtons.add(spot24);
+		spotButtons.add(spot25);
+		spotButtons.add(spot26);
+		spotButtons.add(spot27);
+		
+		spotButtons.add(spot31);
+		spotButtons.add(spot32);
+		spotButtons.add(spot33);
+		spotButtons.add(spot34);
+		spotButtons.add(spot35);
+		spotButtons.add(spot36);
+		spotButtons.add(spot37);
+		
+		spotButtons.add(spot41);
+		spotButtons.add(spot42);
+		spotButtons.add(spot43);
+		spotButtons.add(spot44);
+		spotButtons.add(spot45);
+		spotButtons.add(spot46);
+		spotButtons.add(spot47);
+		
+		spotButtons.add(spot51);
+		spotButtons.add(spot52);
+		spotButtons.add(spot53);
+		spotButtons.add(spot54);
+		spotButtons.add(spot55);
+		spotButtons.add(spot56);
+		spotButtons.add(spot57);
+		
+		spotButtons.add(spot61);
+		spotButtons.add(spot62);
+		spotButtons.add(spot63);
+		spotButtons.add(spot64);
+		spotButtons.add(spot65);
+		spotButtons.add(spot66);
+		spotButtons.add(spot67);
+	}
 	
 	// Handles the data of each spot's location
 	public static class SpotData {
@@ -146,10 +204,51 @@ public class SampleController {
 			currentTurn = "Yellow";
 		}
 		
+		System.out.println(logOutputParser(row, col));
 		winState = winCheck();
+		//randomAi();
+	}
+	
+	// Randomized Moves by the AI
+	public void randomAi() {
+		// Nothing happens if the board is in a Win State
+		if(!winState) {
+			int randomRow = (int)(Math.random() * 5) + 1;
+			int randomCol = (int)(Math.random() * 6) + 1;
+			int spotPosition = ((randomRow - 1) * 7) + (randomCol - 1);
+//			System.out.println("ROW: " + Integer.toString(randomRow) + "; Col: " + Integer.toString(randomCol));
+			
+			// Regenerates a new spot if the generated one is filled
+			while(!validPlay(randomRow, randomCol)) {
+//				System.out.println("ROW: " + Integer.toString(randomRow) + "; Col: " + Integer.toString(randomCol));
+				randomRow = (int)(Math.random() * 5) + 1;
+				randomCol = (int)(Math.random() * 6) + 1;
+			}
+			spotPosition = ((randomRow - 1) * 7) + (randomCol - 1);
+			System.out.println("SPOT POSITION: " + Integer.toString(spotPosition));
+			Button tempSpot = spotButtons.get(spotPosition);
+			
+			System.out.println(spotButtons.get(spotPosition).getId());
+			
+			turnCounter++;
+			spots.get(randomRow-1).get(randomCol-1).setSpotState(currentTurn);
+			
+			// Handles changing turns
+			if(currentTurn.equals("Yellow")) {
+				tempSpot.setStyle("-fx-background-color: yellow; -fx-background-radius: 37.5; -fx-pref-height: 75; -fx-pref-width: 75");
+				currentTurn = "Red";
+			}
+			else {
+				tempSpot.setStyle("-fx-background-color: red; -fx-background-radius: 37.5; -fx-pref-height: 75; -fx-pref-width: 75");
+				currentTurn = "Yellow";
+			}
+			
+			winState = winCheck();
+		}
 	}
 
 	public boolean validPlay(int row, int col) {
+		System.out.println("ROW: " + Integer.toString(row) + "; COL: " + Integer.toString(col));
 		// Checks for if there is a winner already
 		if(winState == true) {
 			if(currentTurn.equals("Yellow")) {
@@ -168,24 +267,40 @@ public class SampleController {
 		}
 		
 		// Checks for if the spot isn't at the lowest position possible
-		if(row-1 != 5) {
-			if(spots.get(row).get(col-1).getSpotState().equals("empty")) {
-				System.out.println("\nINVALID SPOT, THERE ARE OPEN SPOTS BENEATH THIS ONE.\n");
-				return false;
-			}
-		}
+//		if(row-1 != 5) {
+//			if(spots.get(row).get(col-1).getSpotState().equals("empty")) {
+//				System.out.println("\nINVALID SPOT, THERE ARE OPEN SPOTS BENEATH THIS ONE.\n");
+//				return false;
+//			}
+//		}
 		
 		return true;
+	}
+	
+	public String logOutputParser(int row, int col) {
+		String output = "Turn " + Integer.toString(turnCounter) + ": ";
+		if(currentTurn.equals("Yellow")) {
+			output = output + "Red at Row ";
+		}
+		else {
+			output = output + "Yellow at Row ";
+		}
+		output = output + Integer.toString(row) + ": Col " + Integer.toString(col);
+		
+		return output;
 	}
 	
 	// Checks for wins in the horizontal
 	public boolean winCheckHorizontal() {
 		String currentState = "empty";
 		int counter = 0;
+		int line = 0;
 		
 		for(int row = 0; row < 6; row++) {
 			for(int col = 0; col < 7; col++) {
+				System.out.println("COUNTER " + Integer.toString(row + 1) + Integer.toString(col + 1) + ": " + Integer.toString(counter));
 				if(counter == 4) {
+					System.out.println("PASS HORIZONTAL");
 					return true;
 				}
 				if(!(spots.get(row).get(col).getSpotState()).equals(currentState)) {
@@ -213,6 +328,7 @@ public class SampleController {
 		for(int col = 0; col < 7; col++) {
 			for(int row = 0; row < 6; row++) {
 				if(counter == 4) {
+					System.out.println("PASS VERTICAL");
 					return true;
 				}
 				if(!(spots.get(row).get(col).getSpotState()).equals(currentState)) {
@@ -243,8 +359,13 @@ public class SampleController {
 		while(col < 4) {
 			colTemp = col;
 			for(int row = rowTemp; row > -1; row--) {
+//				System.out.println("ROW CHECK: " + Integer.toString(row));
 				if(counter == 4) {
+					System.out.println("PASS FORWARD");
 					return true;
+				}
+				if(colTemp > 6) {
+					break;
 				}
 				if(!(spots.get(row).get(colTemp).getSpotState()).equals(currentState)) {
 					currentState = spots.get(row).get(colTemp).getSpotState();
@@ -258,13 +379,60 @@ public class SampleController {
 				else if(!currentState.equals("empty")) {
 					counter++;
 				}
+//				System.out.println("colTemp: " + Integer.toString(colTemp) + "; row: " + Integer.toString(row));
 				colTemp++;
 			}
-			if(rowTemp < 6) {
+//			System.out.println("");
+			if(rowTemp < 5) {
 				rowTemp++;	
 			}
 			else {
 				col++;
+			}
+		}
+		return false;
+	}
+	
+	// Checks for wins in the diagonal (Bottom Right to Top Left)
+	public boolean winCheckBackwardDiagonal() {
+		String currentState = "empty";
+		int counter = 0;
+		int rowTemp = 3;
+		int colTemp;
+		int col = 6;
+		
+		while(col > -1) {
+			colTemp = col;
+			for(int row = rowTemp; row > -1; row--) {
+//				System.out.println("ROW CHECK: " + Integer.toString(row));
+				if(counter == 4) {
+					System.out.println("PASS BACKWARD");
+					return true;
+				}
+				if(colTemp < 0) {
+					break;
+				}
+				if(!(spots.get(row).get(colTemp).getSpotState()).equals(currentState)) {
+					currentState = spots.get(row).get(colTemp).getSpotState();
+					if(currentState.equals("Yellow") || currentState.equals("Red")) {
+						counter = 1;
+					}
+					else {
+						counter = 0;
+					}
+				}
+				else if(!currentState.equals("empty")) {
+					counter++;
+				}
+//				System.out.println("colTemp: " + Integer.toString(colTemp) + "; row: " + Integer.toString(row));
+				colTemp--;
+			}
+//			System.out.println("");
+			if(rowTemp < 5) {
+				rowTemp++;	
+			}
+			else {
+				col--;
 			}
 		}
 		return false;
@@ -276,7 +444,7 @@ public class SampleController {
 			return true;
 		}
 		
-		if(winCheckForwardDiagonal()) {
+		if(winCheckForwardDiagonal() || winCheckBackwardDiagonal()) {
 			return true;
 		}
 		

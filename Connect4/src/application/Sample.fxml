@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.SampleController">
@@ -20,7 +21,10 @@
                <children>
                   <AnchorPane prefHeight="100.0" prefWidth="100.0" style="-fx-background-color: blue;">
                      <children>
-                        <Button fx:id="spot11" layoutX="12.5" layoutY="12.5" mnemonicParsing="false" onAction="#spotPress" style="-fx-background-radius: 37.5; -fx-pref-height: 75; -fx-pref-width: 75; -fx-background-color: white;" />
+                        <Button fx:id="spot11" layoutX="12.5" layoutY="12.5" mnemonicParsing="false" onAction="#spotPress" style="-fx-background-radius: 37.5; -fx-pref-height: 75; -fx-pref-width: 75; -fx-background-color: white;" text="Row 1: Col 1">
+                           <font>
+                              <Font size="10.0" />
+                           </font></Button>
                      </children>
                   </AnchorPane>
                   <AnchorPane prefHeight="100.0" prefWidth="100.0" style="-fx-background-color: blue;">
@@ -50,7 +54,10 @@
                   </AnchorPane>
                   <AnchorPane prefHeight="100.0" prefWidth="100.0" style="-fx-background-color: blue;">
                      <children>
-                        <Button fx:id="spot17" layoutX="12.5" layoutY="12.5" mnemonicParsing="false" onAction="#spotPress" style="-fx-background-radius: 37.5; -fx-pref-height: 75; -fx-pref-width: 75; -fx-background-color: white;" />
+                        <Button fx:id="spot17" layoutX="12.5" layoutY="12.5" mnemonicParsing="false" onAction="#spotPress" style="-fx-background-radius: 37.5; -fx-pref-height: 75; -fx-pref-width: 75; -fx-background-color: white;" text="Row 1: Col 7">
+                           <font>
+                              <Font size="10.0" />
+                           </font></Button>
                      </children>
                   </AnchorPane>
                </children>
@@ -215,7 +222,10 @@
                <children>
                   <AnchorPane prefHeight="100.0" prefWidth="100.0" style="-fx-background-color: blue;">
                      <children>
-                        <Button fx:id="spot61" layoutX="12.5" layoutY="12.5" mnemonicParsing="false" onAction="#spotPress" style="-fx-background-radius: 37.5; -fx-pref-height: 75; -fx-pref-width: 75; -fx-background-color: white;" />
+                        <Button fx:id="spot61" layoutX="12.5" layoutY="12.5" mnemonicParsing="false" onAction="#spotPress" style="-fx-background-radius: 37.5; -fx-pref-height: 75; -fx-pref-width: 75; -fx-background-color: white;" text="Row 6: Col 1">
+                           <font>
+                              <Font size="10.0" />
+                           </font></Button>
                      </children>
                   </AnchorPane>
                   <AnchorPane prefHeight="100.0" prefWidth="100.0" style="-fx-background-color: blue;">
@@ -245,7 +255,10 @@
                   </AnchorPane>
                   <AnchorPane prefHeight="100.0" prefWidth="100.0" style="-fx-background-color: blue;">
                      <children>
-                        <Button fx:id="spot67" layoutX="12.5" layoutY="12.5" mnemonicParsing="false" onAction="#spotPress" style="-fx-background-radius: 37.5; -fx-pref-height: 75; -fx-pref-width: 75; -fx-background-color: white;" />
+                        <Button fx:id="spot67" layoutX="12.5" layoutY="12.5" mnemonicParsing="false" onAction="#spotPress" style="-fx-background-radius: 37.5; -fx-pref-height: 75; -fx-pref-width: 75; -fx-background-color: white;" text="Row 6: Col 7">
+                           <font>
+                              <Font size="10.0" />
+                           </font></Button>
                      </children>
                   </AnchorPane>
                </children>
