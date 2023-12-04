@@ -36,7 +36,7 @@ public class RandomAI {
 			
 			spots.get(randomRow-1).get(randomCol-1).setSpotState(currentTurn);
 			
-			// Handles changing turns
+			// Handles changing colors
 			if(currentTurn.equals("Yellow")) {
 				tempSpot.setStyle("-fx-background-color: yellow; -fx-background-radius: 37.5; -fx-pref-height: 75; -fx-pref-width: 75");
 			}

@@ -63,6 +63,7 @@ public class SampleController {
 	int turnCounter = 0;
 	public ArrayList<Button> spotButtons;
 	RandomAI randomAi = new RandomAI();
+	ThoughtfulAI thoughtfulAi = new ThoughtfulAI();
 	
 	@FXML
 	public void initialize() {
@@ -223,10 +224,21 @@ public class SampleController {
 		
 		// Chooses between thoughtful and random AI
 		if(thoughtfulAIOn) {
-			
+			spots = thoughtfulAi.thoughtfulAiMove(winState, currentTurn, spotButtons, spots);
+			int lastRow = thoughtfulAi.getLastRow();
+			int lastCol = thoughtfulAi.getLastCol();
+			turnCounter++;
+			// Handles changing turns for AI
+			if(currentTurn.equals("Yellow")) {
+				currentTurn = "Red";
+			}
+			else {
+				currentTurn = "Yellow";
+			}
+			System.out.println(thoughtfulAi.aiLogOutputParser(lastRow+1, lastCol+1, turnCounter, currentTurn));
+			winState = winCheck(lastRow, lastCol);
 		}
 		else {
-			//randomAi();
 			spots = randomAi.randomAiMove(winState, currentTurn, spotButtons, spots);
 			int lastRow = randomAi.getLastRow();
 			int lastCol = randomAi.getLastCol();
@@ -256,67 +268,6 @@ public class SampleController {
 			aiLabel.setText("Thoughtful AI: On");
 		}
 	}
-	
-//	// Randomized Moves by the AI
-//	public void randomAi() {
-//		// Nothing happens if the board is in a Win State
-//		if(!winState) {
-//			int randomRow = (int)((Math.random() * 6) + 1);
-//			int randomCol = (int)((Math.random() * 7) + 1);
-////			System.out.println("ROW: " + Integer.toString(randomRow) + "; Col: " + Integer.toString(randomCol));
-//			
-//			// Regenerates a new spot if the generated one is filled
-//			while(!aiValidPlay(randomRow, randomCol) && randomRow < 7 && randomCol < 8) {
-////				System.out.println("ROW: " + Integer.toString(randomRow) + "; Col: " + Integer.toString(randomCol));
-//				randomRow = (int)((Math.random() * 6) + 1);
-//				randomCol = (int)((Math.random() * 7) + 1);
-//			}
-//			int spotPosition = ((randomRow - 1) * 7) + (randomCol - 1);
-////			System.out.println("SPOT POSITION: " + Integer.toString(spotPosition));
-//			Button tempSpot = spotButtons.get(spotPosition);
-//			
-////			System.out.println(spotButtons.get(spotPosition).getId());
-//			
-//			turnCounter++;
-//			spots.get(randomRow-1).get(randomCol-1).setSpotState(currentTurn);
-//			
-//			// Handles changing turns
-//			if(currentTurn.equals("Yellow")) {
-//				tempSpot.setStyle("-fx-background-color: yellow; -fx-background-radius: 37.5; -fx-pref-height: 75; -fx-pref-width: 75");
-//				currentTurn = "Red";
-//			}
-//			else {
-//				tempSpot.setStyle("-fx-background-color: red; -fx-background-radius: 37.5; -fx-pref-height: 75; -fx-pref-width: 75");
-//				currentTurn = "Yellow";
-//			}
-//			
-//			System.out.println(logOutputParser(randomRow, randomCol));
-//			winState = winCheck(randomRow-1, randomCol-1);
-//		}
-//	}
-	
-	public void thoughtfulAi() {
-		// Nothing happens if the board is in a Win State
-		if(!winState) {
-			
-		}
-	}
-
-//	public boolean aiValidPlay(int row, int col) {
-//		// Checks for if the spot is already taken by a player
-//		if(!(spots.get(row-1).get(col-1).getSpotState()).equals("empty")) {
-//			return false;
-//		}
-//		
-//		// Checks for if the spot isn't at the lowest position possible
-//		if(row-1 < 5) {
-//			if(spots.get(row).get(col-1).getSpotState().equals("empty")) {
-//				return false;
-//			}
-//		}
-//		
-//		return true;
-//	}
 	
 	public boolean validPlay(int row, int col) {
 //		System.out.println("ROW: " + Integer.toString(row) + "; COL: " + Integer.toString(col));
@@ -565,6 +516,7 @@ public class SampleController {
 		currentTurn = "Yellow";
 		thoughtfulAIOn = false;
 		aiButton.setDisable(false);
+		aiButton.setText("Turn On Thoughtful AI");
 		aiLabel.setText("Thoughtful AI: Off");
 		turnCounter = 0;
 	}
