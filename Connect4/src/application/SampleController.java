@@ -2,13 +2,13 @@ package application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import java.util.*;
+import javafx.scene.control.Label;
 
-import application.SampleController.SpotData;
+import java.util.*;
 
 public class SampleController {
 	// Instantiates all the buttons
-	@FXML Button spot11 = new Button();
+	@FXML Button spot11;
 	@FXML Button spot12;
 	@FXML Button spot13;
 	@FXML Button spot14;
@@ -51,15 +51,18 @@ public class SampleController {
 	@FXML Button spot66;
 	@FXML Button spot67;
 	@FXML Button resetButton;
+	@FXML Button aiButton;
+	@FXML Label aiLabel;
 	
 	// Instantiates variables for functionality
 	ArrayList<ArrayList<SpotData>> spots = loadAllSpots();
 	boolean winState = false;
-	boolean thoughtfulAI = false;
+	boolean thoughtfulAIOn = false;
 	String currentTurn = "Yellow";
 	final int CHAR_TO_INT = 48;
 	int turnCounter = 0;
 	public ArrayList<Button> spotButtons;
+	RandomAI randomAi = new RandomAI();
 	
 	@FXML
 	public void initialize() {
@@ -205,50 +208,118 @@ public class SampleController {
 		}
 		
 		System.out.println(logOutputParser(row, col));
-		winState = winCheck();
-		//randomAi();
-	}
-	
-	// Randomized Moves by the AI
-	public void randomAi() {
-		// Nothing happens if the board is in a Win State
-		if(!winState) {
-			int randomRow = (int)(Math.random() * 5) + 1;
-			int randomCol = (int)(Math.random() * 6) + 1;
-			int spotPosition = ((randomRow - 1) * 7) + (randomCol - 1);
-//			System.out.println("ROW: " + Integer.toString(randomRow) + "; Col: " + Integer.toString(randomCol));
-			
-			// Regenerates a new spot if the generated one is filled
-			while(!validPlay(randomRow, randomCol)) {
-//				System.out.println("ROW: " + Integer.toString(randomRow) + "; Col: " + Integer.toString(randomCol));
-				randomRow = (int)(Math.random() * 5) + 1;
-				randomCol = (int)(Math.random() * 6) + 1;
-			}
-			spotPosition = ((randomRow - 1) * 7) + (randomCol - 1);
-			System.out.println("SPOT POSITION: " + Integer.toString(spotPosition));
-			Button tempSpot = spotButtons.get(spotPosition);
-			
-			System.out.println(spotButtons.get(spotPosition).getId());
-			
-			turnCounter++;
-			spots.get(randomRow-1).get(randomCol-1).setSpotState(currentTurn);
-			
-			// Handles changing turns
+		winState = winCheck(row-1, col-1);
+		if(winState) {
 			if(currentTurn.equals("Yellow")) {
-				tempSpot.setStyle("-fx-background-color: yellow; -fx-background-radius: 37.5; -fx-pref-height: 75; -fx-pref-width: 75");
+				System.out.println("Red Wins!");
+			}
+			else {
+				System.out.println("Yellow Wins!");
+			}
+		}
+		
+		// When the first move is played, whatever AI setting is selected is locked in until reset
+		aiButton.setDisable(true);
+		
+		// Chooses between thoughtful and random AI
+		if(thoughtfulAIOn) {
+			
+		}
+		else {
+			//randomAi();
+			spots = randomAi.randomAiMove(winState, currentTurn, spotButtons, spots);
+			int lastRow = randomAi.getLastRow();
+			int lastCol = randomAi.getLastCol();
+			turnCounter++;
+			// Handles changing turns for AI
+			if(currentTurn.equals("Yellow")) {
 				currentTurn = "Red";
 			}
 			else {
-				tempSpot.setStyle("-fx-background-color: red; -fx-background-radius: 37.5; -fx-pref-height: 75; -fx-pref-width: 75");
 				currentTurn = "Yellow";
 			}
+			System.out.println(randomAi.aiLogOutputParser(lastRow, lastCol, turnCounter, currentTurn));
+			winState = winCheck(lastRow-1, lastCol-1);
+		}
+	}
+	
+	// Handles the Thoughtful AI Toggle button
+	public void aiToggle(ActionEvent event) {
+		if(thoughtfulAIOn) {
+			thoughtfulAIOn = false;
+			aiButton.setText("Turn On Thoughtful AI");
+			aiLabel.setText("Thoughtful AI: Off");
+		}
+		else {
+			thoughtfulAIOn = true;
+			aiButton.setText("Turn Off Thoughtful AI");
+			aiLabel.setText("Thoughtful AI: On");
+		}
+	}
+	
+//	// Randomized Moves by the AI
+//	public void randomAi() {
+//		// Nothing happens if the board is in a Win State
+//		if(!winState) {
+//			int randomRow = (int)((Math.random() * 6) + 1);
+//			int randomCol = (int)((Math.random() * 7) + 1);
+////			System.out.println("ROW: " + Integer.toString(randomRow) + "; Col: " + Integer.toString(randomCol));
+//			
+//			// Regenerates a new spot if the generated one is filled
+//			while(!aiValidPlay(randomRow, randomCol) && randomRow < 7 && randomCol < 8) {
+////				System.out.println("ROW: " + Integer.toString(randomRow) + "; Col: " + Integer.toString(randomCol));
+//				randomRow = (int)((Math.random() * 6) + 1);
+//				randomCol = (int)((Math.random() * 7) + 1);
+//			}
+//			int spotPosition = ((randomRow - 1) * 7) + (randomCol - 1);
+////			System.out.println("SPOT POSITION: " + Integer.toString(spotPosition));
+//			Button tempSpot = spotButtons.get(spotPosition);
+//			
+////			System.out.println(spotButtons.get(spotPosition).getId());
+//			
+//			turnCounter++;
+//			spots.get(randomRow-1).get(randomCol-1).setSpotState(currentTurn);
+//			
+//			// Handles changing turns
+//			if(currentTurn.equals("Yellow")) {
+//				tempSpot.setStyle("-fx-background-color: yellow; -fx-background-radius: 37.5; -fx-pref-height: 75; -fx-pref-width: 75");
+//				currentTurn = "Red";
+//			}
+//			else {
+//				tempSpot.setStyle("-fx-background-color: red; -fx-background-radius: 37.5; -fx-pref-height: 75; -fx-pref-width: 75");
+//				currentTurn = "Yellow";
+//			}
+//			
+//			System.out.println(logOutputParser(randomRow, randomCol));
+//			winState = winCheck(randomRow-1, randomCol-1);
+//		}
+//	}
+	
+	public void thoughtfulAi() {
+		// Nothing happens if the board is in a Win State
+		if(!winState) {
 			
-			winState = winCheck();
 		}
 	}
 
+//	public boolean aiValidPlay(int row, int col) {
+//		// Checks for if the spot is already taken by a player
+//		if(!(spots.get(row-1).get(col-1).getSpotState()).equals("empty")) {
+//			return false;
+//		}
+//		
+//		// Checks for if the spot isn't at the lowest position possible
+//		if(row-1 < 5) {
+//			if(spots.get(row).get(col-1).getSpotState().equals("empty")) {
+//				return false;
+//			}
+//		}
+//		
+//		return true;
+//	}
+	
 	public boolean validPlay(int row, int col) {
-		System.out.println("ROW: " + Integer.toString(row) + "; COL: " + Integer.toString(col));
+//		System.out.println("ROW: " + Integer.toString(row) + "; COL: " + Integer.toString(col));
 		// Checks for if there is a winner already
 		if(winState == true) {
 			if(currentTurn.equals("Yellow")) {
@@ -267,12 +338,12 @@ public class SampleController {
 		}
 		
 		// Checks for if the spot isn't at the lowest position possible
-//		if(row-1 != 5) {
-//			if(spots.get(row).get(col-1).getSpotState().equals("empty")) {
-//				System.out.println("\nINVALID SPOT, THERE ARE OPEN SPOTS BENEATH THIS ONE.\n");
-//				return false;
-//			}
-//		}
+		if(row-1 < 5) {
+			if(spots.get(row).get(col-1).getSpotState().equals("empty")) {
+				System.out.println("\nINVALID SPOT, THERE ARE OPEN SPOTS BENEATH THIS ONE.\n");
+				return false;
+			}
+		}
 		
 		return true;
 	}
@@ -291,160 +362,142 @@ public class SampleController {
 	}
 	
 	// Checks for wins in the horizontal
-	public boolean winCheckHorizontal() {
+	public boolean winCheckHorizontal(int row) {
 		String currentState = "empty";
 		int counter = 0;
-		int line = 0;
 		
-		for(int row = 0; row < 6; row++) {
-			for(int col = 0; col < 7; col++) {
-				System.out.println("COUNTER " + Integer.toString(row + 1) + Integer.toString(col + 1) + ": " + Integer.toString(counter));
-				if(counter == 4) {
-					System.out.println("PASS HORIZONTAL");
-					return true;
+		for(int col = 0; col < 7; col++) {
+			if(!(spots.get(row).get(col).getSpotState()).equals(currentState)) {
+				currentState = spots.get(row).get(col).getSpotState();
+				if(currentState.equals("Yellow") || currentState.equals("Red")) {
+					counter = 1;
 				}
-				if(!(spots.get(row).get(col).getSpotState()).equals(currentState)) {
-					currentState = spots.get(row).get(col).getSpotState();
-					if(currentState.equals("Yellow") || currentState.equals("Red")) {
-						counter = 1;
-					}
-					else {
-						counter = 0;
-					}
-				}
-				else if(!currentState.equals("empty")) {
-					counter++;
+				else {
+					counter = 0;
 				}
 			}
+			else if(!currentState.equals("empty")) {
+				counter++;
+			}
+			if(counter == 4) {
+//				System.out.println("PASS HORIZONTAL");
+				return true;
+			}
+//				System.out.println("COUNTER " + Integer.toString(row + 1) + Integer.toString(col + 1) + ": " + Integer.toString(counter));
 		}
 		return false;
 	}
 	
 	// Checks for wins in the vertical
-	public boolean winCheckVertical() {
+	public boolean winCheckVertical(int col) {
 		String currentState = "empty";
 		int counter = 0;
 		
-		for(int col = 0; col < 7; col++) {
-			for(int row = 0; row < 6; row++) {
-				if(counter == 4) {
-					System.out.println("PASS VERTICAL");
-					return true;
+		for(int row = 0; row < 6; row++) {
+			if(!(spots.get(row).get(col).getSpotState()).equals(currentState)) {
+				currentState = spots.get(row).get(col).getSpotState();
+				if(currentState.equals("Yellow") || currentState.equals("Red")) {
+					counter = 1;
 				}
-				if(!(spots.get(row).get(col).getSpotState()).equals(currentState)) {
-					currentState = spots.get(row).get(col).getSpotState();
-					if(currentState.equals("Yellow") || currentState.equals("Red")) {
-						counter = 1;
-					}
-					else {
-						counter = 0;
-					}
-				}
-				else if(!currentState.equals("empty")) {
-					counter++;
+				else {
+					counter = 0;
 				}
 			}
+			else if(!currentState.equals("empty")) {
+				counter++;
+			}
+			if(counter == 4) {
+//				System.out.println("PASS VERTICAL");
+				return true;
+			}
+//				System.out.println("COUNTER " + Integer.toString(row + 1) + Integer.toString(col + 1) + ": " + Integer.toString(counter));
 		}
 		return false;
 	}
 	
 	// Checks for wins in the diagonal (Bottom Left to Top Right)
-	public boolean winCheckForwardDiagonal() {
+	public boolean winCheckForwardDiagonal(int row, int col) {
 		String currentState = "empty";
 		int counter = 0;
-		int rowTemp = 3;
-		int colTemp;
-		int col = 0;
 		
-		while(col < 4) {
-			colTemp = col;
-			for(int row = rowTemp; row > -1; row--) {
-//				System.out.println("ROW CHECK: " + Integer.toString(row));
-				if(counter == 4) {
-					System.out.println("PASS FORWARD");
-					return true;
-				}
-				if(colTemp > 6) {
-					break;
-				}
-				if(!(spots.get(row).get(colTemp).getSpotState()).equals(currentState)) {
-					currentState = spots.get(row).get(colTemp).getSpotState();
-					if(currentState.equals("Yellow") || currentState.equals("Red")) {
-						counter = 1;
-					}
-					else {
-						counter = 0;
-					}
-				}
-				else if(!currentState.equals("empty")) {
-					counter++;
-				}
-//				System.out.println("colTemp: " + Integer.toString(colTemp) + "; row: " + Integer.toString(row));
-				colTemp++;
-			}
-//			System.out.println("");
-			if(rowTemp < 5) {
-				rowTemp++;	
-			}
-			else {
-				col++;
-			}
+		// Starts at the farthest Bottom left possible in the diagonal that contains the recent spot
+		while(row < 5 && col > 0) {
+			row++;
+			col--;
 		}
+
+//		System.out.println("ROW: " + Integer.toString(row) + "; COL: " + Integer.toString(col));
+		
+		while(row > -1 && col < 7) {
+			if(!(spots.get(row).get(col).getSpotState()).equals(currentState)) {
+				currentState = spots.get(row).get(col).getSpotState();
+				if(currentState.equals("Yellow") || currentState.equals("Red")) {
+					counter = 1;
+				}
+				else {
+					counter = 0;
+				}
+			}
+			else if(!currentState.equals("empty")) {
+				counter++;
+			}
+			if(counter == 4) {
+//				System.out.println("PASS FORWARD");
+				return true;
+			}
+			
+			row--;
+			col++;
+		}
+		
 		return false;
 	}
 	
 	// Checks for wins in the diagonal (Bottom Right to Top Left)
-	public boolean winCheckBackwardDiagonal() {
+	public boolean winCheckBackwardDiagonal(int row, int col) {
 		String currentState = "empty";
 		int counter = 0;
-		int rowTemp = 3;
-		int colTemp;
-		int col = 6;
 		
-		while(col > -1) {
-			colTemp = col;
-			for(int row = rowTemp; row > -1; row--) {
-//				System.out.println("ROW CHECK: " + Integer.toString(row));
-				if(counter == 4) {
-					System.out.println("PASS BACKWARD");
-					return true;
-				}
-				if(colTemp < 0) {
-					break;
-				}
-				if(!(spots.get(row).get(colTemp).getSpotState()).equals(currentState)) {
-					currentState = spots.get(row).get(colTemp).getSpotState();
-					if(currentState.equals("Yellow") || currentState.equals("Red")) {
-						counter = 1;
-					}
-					else {
-						counter = 0;
-					}
-				}
-				else if(!currentState.equals("empty")) {
-					counter++;
-				}
-//				System.out.println("colTemp: " + Integer.toString(colTemp) + "; row: " + Integer.toString(row));
-				colTemp--;
-			}
-//			System.out.println("");
-			if(rowTemp < 5) {
-				rowTemp++;	
-			}
-			else {
-				col--;
-			}
+		// Starts at the farthest Bottom left possible in the diagonal that contains the recent spot
+		while(row < 5 && col < 6) {
+			row++;
+			col++;
 		}
+
+//		System.out.println("ROW: " + Integer.toString(row) + "; COL: " + Integer.toString(col));
+		
+		while(row > -1 && col > -1) {
+			if(!(spots.get(row).get(col).getSpotState()).equals(currentState)) {
+				currentState = spots.get(row).get(col).getSpotState();
+				if(currentState.equals("Yellow") || currentState.equals("Red")) {
+					counter = 1;
+				}
+				else {
+					counter = 0;
+				}
+			}
+			else if(!currentState.equals("empty")) {
+				counter++;
+			}
+			if(counter == 4) {
+//				System.out.println("PASS FORWARD");
+				return true;
+			}
+			
+			row--;
+			col--;
+		}
+		
 		return false;
 	}
 	
 	// Calls all the different win checks at once
-	public boolean winCheck() {
-		if(winCheckHorizontal() || winCheckVertical()) {
+	public boolean winCheck(int row, int col) {
+		if(winCheckHorizontal(row) || winCheckVertical(col)) {
 			return true;
 		}
 		
-		if(winCheckForwardDiagonal() || winCheckBackwardDiagonal()) {
+		if(winCheckForwardDiagonal(row, col) || winCheckBackwardDiagonal(row, col)) {
 			return true;
 		}
 		
@@ -510,7 +563,9 @@ public class SampleController {
 		spots = loadAllSpots();
 		winState = false;
 		currentTurn = "Yellow";
-		thoughtfulAI = false;
+		thoughtfulAIOn = false;
+		aiButton.setDisable(false);
+		aiLabel.setText("Thoughtful AI: Off");
 		turnCounter = 0;
 	}
 }
